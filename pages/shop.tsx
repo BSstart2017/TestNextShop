@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import {Button} from "@material-ui/core";
 import axios from "axios";
 import {GetServerSideProps, NextPage} from "next";
@@ -6,10 +6,13 @@ import Headers from "../layout/Headers";
 import {Context, GlobalContent} from "./index";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {useRouter} from "next/router";
+import {SandBoxOrderSuccessType} from "./api/sandbox";
+import {OrderResponseSuccessType} from "./api/order";
 
 const Shop: NextPage<PropsType> = ({ response}) => {
 
     const {auth} = useContext<GlobalContent>(Context)
+    const [statusOrder, setStatusOrder] = useState<OrderResponseSuccessType | null>(null)
     const [user] = useAuthState(auth)
     const router = useRouter()
 
@@ -19,56 +22,20 @@ const Shop: NextPage<PropsType> = ({ response}) => {
         }
     },[router, user])
 
-    const order = {
-        "notifyUrl": "https://bsstart2017.github.io",
-        "customerIp": "127.0.0.1",
-        "merchantPosId": "300746",
-        "description": "RTV market",
-        "currencyCode": "PLN",
-        "totalAmount": "21000",
-        "buyer": {
-            "email": "nicepk.by@gmail.com",
-            "phone": "654111654",
-            "firstName": "John",
-            "lastName": "Doe",
-            "language": "pl"
-        },
-        "products": [
-            {
-                "name": "Wireless Mouse for Laptop",
-                "unitPrice": "15000",
-                "quantity": "1"
-            },
-            {
-                "name": "HDMI cable",
-                "unitPrice": "6000",
-                "quantity": "1"
-            }
-        ]
-    }
-
-
     const handlerClickBay = async () => {
-
-        const instance = axios.create({
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${response?.access_token}`
-            },
-            baseURL: 'https://secure.snd.payu.com/'
-        })
-        try {
-            const response = await instance.post(`api/v2_1/orders`, order)
-            console.log(response)
-        } catch (e) {
-            console.log(e)
+        const order = await axios.get<SandBoxOrderSuccessType>(`http://test-shopm.herokuapp.com/api/sandbox?token=${response.access_token}`)
+        window.open(order.data.redirectUri);
+        if(order.status === 200){
+            const status = await axios.get<OrderResponseSuccessType>(`http://test-shopm.herokuapp.com/api/order?token=${response.access_token}&order=${order.data.orderId}`)
+            setStatusOrder(status.data)
         }
-
     }
-
     return (
         <>
             <Headers auth={auth}>
+                    <div style={{marginBottom: 20}}>
+                        <span>Status order: {statusOrder?.orders[0].orderId} {statusOrder?.orders[0].status}</span>
+                    </div>
                 <Button onClick={handlerClickBay} variant={"outlined"}>Buy</Button>
             </Headers>
 
@@ -100,3 +67,4 @@ type PostAuthorizeToken = {
 type PropsType = {
     response: PostAuthorizeToken
 }
+

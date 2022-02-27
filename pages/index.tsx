@@ -30,7 +30,7 @@ const Home: NextPage = () => {
     const [user, loading] = useAuthState(auth)
     const router = useRouter()
 
-    useEffect(()=>{
+    useEffect(() => {
         if(user){
             router.push('/shop')
         }
@@ -40,7 +40,7 @@ const Home: NextPage = () => {
         const provider = new GoogleAuthProvider()
         const {user} = await signInWithPopup(auth, provider)
         if (user){
-            router.push('/shop')
+           await router.push('/shop')
         }
     }
 
