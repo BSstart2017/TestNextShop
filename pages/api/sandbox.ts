@@ -10,7 +10,7 @@ interface SandBoxNextApiResponse extends NextApiRequest{
 const sandBoxOrder = (req: SandBoxNextApiResponse, res: NextApiResponse) =>{
     res.statusCode = 200
     const order : OrderType = {
-        notifyUrl: "http://test-shopm.herokuapp.com/api/notify",
+        notifyUrl: "http://ac3c-2a01-117f-4107-2200-10f4-abe8-1abb-22df.ngrok.io/api/notify",
         customerIp: "127.0.0.1",
         merchantPosId: "430756",
         description: "RTV market",
@@ -62,7 +62,6 @@ type OrderType = {
     buyer: OrderBuyerType
     products: Array<OrderProductsType>
 }
-
 type OrderBuyerType = {
     email: string
     phone: string
@@ -70,19 +69,16 @@ type OrderBuyerType = {
     lastName: string
     language: string
 }
-
 export type OrderProductsType = {
     name: string
     unitPrice: string
     quantity: string
 }
-
 type SandBoxOrderErrorType = {
     response: {
         data: SandBoxOrderSuccessType
     }
 }
-
 export type SandBoxOrderSuccessType = {
     status: { statusCode: string }
     redirectUri: string

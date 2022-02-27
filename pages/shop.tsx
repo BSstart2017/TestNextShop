@@ -30,6 +30,7 @@ const Shop: NextPage<PropsType> = ({ response}) => {
             setStatusOrder(status.data)
         }
     }
+
     return (
         <>
             <Headers auth={auth}>
