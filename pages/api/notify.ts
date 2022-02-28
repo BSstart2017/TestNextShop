@@ -1,5 +1,6 @@
 import {NextApiRequest, NextApiResponse} from "next";
 import {OrderProductsType} from "./sandbox";
+import {statusData} from "../../utils/content";
 //import '@jswork/next-md5';
 
 interface NotifyNextApiResponse extends NextApiRequest{
@@ -29,8 +30,12 @@ const notify = async (req: NotifyNextApiResponse, res: NextApiResponse) =>{
        // }else{
        //     res.end('Wrong signature')
        // }
-        req.body
         res.end()
+        return statusData.push(req.body)
+    }
+
+    if (req.method === 'GET') {
+        return res.status(200).json(statusData);
     }
 }
 
